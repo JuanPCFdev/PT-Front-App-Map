@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.jetbrainsKotlinSerialization)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
@@ -58,7 +59,17 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.52")
 
     // --- Navigation Compose ---
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.navigation:navigation-compose:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    //Map
+    implementation("com.google.maps.android:maps-compose:2.12.0")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     //Testing
     testImplementation(libs.junit)

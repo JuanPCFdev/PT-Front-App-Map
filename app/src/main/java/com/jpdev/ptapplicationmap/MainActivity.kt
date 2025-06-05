@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.jpdev.ptapplicationmap.presentation.LoginScreen
-import com.jpdev.ptapplicationmap.ui.theme.PTApplicationMapTheme
+import com.jpdev.ptapplicationmap.core.navigation.NavigationWrapper
+import com.jpdev.ptapplicationmap.presentation.ui.theme.PTApplicationMapTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PTApplicationMapTheme {
-                LoginScreen()
+                NavigationWrapper()
             }
         }
     }

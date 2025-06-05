@@ -1,4 +1,4 @@
-package com.jpdev.ptapplicationmap.ui.theme
+package com.jpdev.ptapplicationmap.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

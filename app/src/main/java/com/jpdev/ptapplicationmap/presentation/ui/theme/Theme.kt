@@ -1,4 +1,4 @@
-package com.jpdev.ptapplicationmap.ui.theme
+package com.jpdev.ptapplicationmap.presentation.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
