@@ -79,4 +79,21 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Unit Tests (testImplementation)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.5")  // MockK (o Mockito, pero no ambos)
+    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")  // Testing LiveData
+
+    // MockWebServer (para pruebas de integración)
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")  // Usa última versión
+
+    // Coroutines (versión unificada)
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")  // Misma versión que test
+
+    // Hilt
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.52")
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.52")  // Usa ksp para Kotlin
+
 }

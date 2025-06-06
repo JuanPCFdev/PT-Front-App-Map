@@ -1,6 +1,5 @@
 package com.jpdev.ptapplicationmap.core
 
-import com.jpdev.ptapplicationmap.data.remote.AuthClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
