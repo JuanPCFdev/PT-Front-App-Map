@@ -6,6 +6,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+
+//En esta app, no modificamos la tipografia fuente, pero en caso de querer modificarla, podemos hacerlo aqui
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

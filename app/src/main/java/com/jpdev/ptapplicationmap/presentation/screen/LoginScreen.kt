@@ -19,8 +19,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -57,11 +61,13 @@ import com.jpdev.ptapplicationmap.presentation.ui.theme.Primary
 import com.jpdev.ptapplicationmap.presentation.ui.theme.Secondary
 import com.jpdev.ptapplicationmap.presentation.viewmodel.LoginViewModel
 
+//Login Screen es nuestro componente principal que contiene toda la pantalla de inicio de sesion.
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
-    navigateToMap: (Double, Double) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(), //Inyectamos el viewModel con hilt
+    navigateToMap: (Double, Double) -> Unit, //Función que nos permite navegar a la pantalla del mapa.
 ) {
+    //Recolectamos los datos del viewModel con sus flows
     val user by viewModel.user.collectAsState("")
     val password by viewModel.password.collectAsState("")
     var passwordVisible by remember { mutableStateOf(false) }
@@ -71,10 +77,19 @@ fun LoginScreen(
     val isEmailValid by viewModel.isEmailValid.collectAsState(false)
     val isPasswordValid by viewModel.isPasswordValid.collectAsState(false)
     val isFormValid by viewModel.isFormValid.collectAsState(false)
+
+    //Variable de contexto para realizar los toast
     val context = LocalContext.current
 
+    //Contenedor principal de la UI, usamos inner padding para el safeArea integrado con Scaffold
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            TestServer(onTestServer = {
+                viewModel.testServer(context)
+            })//FloatingActionButton para probar el servidor
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -90,6 +105,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                //Componente que contiene los campos del formulario de inicio de sesion
                 Form(
                     user = user,
                     onUserChange = { viewModel.onUserChange(it) },
@@ -110,7 +126,7 @@ fun LoginScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
+                //Manejamos el estado de la UI con un when que muestra estados de carga, exito o error.
                 when (uiState) {
                     is LoginViewModel.UiState.Error -> {
                         Text(
@@ -137,9 +153,9 @@ fun LoginScreen(
                 }
 
             }
-
+            //Componente que contiene información de uso para la demo.
             DemoInfo()
-
+            //Componente extra para diseño
             Text(
                 "Todos los derechos reservados © 2025",
                 color = OnBackground,
@@ -151,6 +167,21 @@ fun LoginScreen(
     }
 }
 
+//Eeste componente nos permite realizar una llamada de prueba al servidor, para saber si este está en linea
+@Composable
+private fun TestServer(onTestServer: () -> Unit) {
+    ElevatedButton(
+        onClick = { onTestServer() },
+        //containerColor = Primary,
+        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+    ) {
+        Text("Comprobar Servidor 💻", color = OnBackground, fontSize = 12.sp)
+    }
+}
+
+//Informacion para el uso de la demo
 @Composable
 private fun DemoInfo() {
     Column(
@@ -164,6 +195,7 @@ private fun DemoInfo() {
     }
 }
 
+//Titulo de la pantalla
 @Composable
 private fun Title() {
     Text(
@@ -174,6 +206,7 @@ private fun Title() {
     )
 }
 
+//Formulario principal del aplicativo
 @Composable
 private fun Form(
     user: String,
@@ -204,83 +237,23 @@ private fun Form(
             verticalArrangement = Arrangement.Center
         ) {
             Title()
+
             Spacer(modifier = Modifier.height(32.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = user,
-                onValueChange = onUserChange,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = if (isEmailValid) Primary else ErrorColor,
-                    unfocusedBorderColor = OnBackground,
-                    cursorColor = Primary,
-                    focusedLabelColor = OnBackground,
-                    unfocusedLabelColor = Color.Gray,
-                    focusedTextColor = OnBackground,
-                    unfocusedTextColor = OnBackground
-                ),
-                shape = RoundedCornerShape(12.dp),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_user),
-                        contentDescription = "User icon",
-                        tint = Color.Gray
-                    )
-                },
-                label = { Text("Usuario") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
-                singleLine = true
-            )
+
+            TextFieldUser(user, onUserChange, isEmailValid)
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = onPasswordChange,
-                label = { Text("Contraseña") },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = if (isPasswordValid) Primary else ErrorColor,
-                    unfocusedBorderColor = OnBackground,
-                    cursorColor = Primary,
-                    focusedLabelColor = OnBackground,
-                    unfocusedLabelColor = Color.Gray,
-                    focusedTextColor = OnBackground,
-                    unfocusedTextColor = OnBackground
-                ),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                shape = RoundedCornerShape(12.dp),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_lock),
-                        contentDescription = "Password icon",
-                        tint = Color.Gray
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = onPasswordVisibilityChange) {
-                        Icon(
-                            painter = if (passwordVisible)
-                                painterResource(R.drawable.ic_visibility)
-                            else
-                                painterResource(R.drawable.ic_visibility_off),
-                            contentDescription = if (passwordVisible)
-                                "Ocultar contraseña"
-                            else
-                                "Mostrar contraseña",
-                            tint = Color.Gray
-                        )
-                    }
-                }
+            TextFieldPassword(
+                password,
+                onPasswordChange,
+                isPasswordValid,
+                passwordVisible,
+                onPasswordVisibilityChange
             )
+
             Spacer(modifier = Modifier.height(20.dp))
+
             LoginButton(
                 isValidForm = isValidForm,
                 onFormSubmitted = onFormSubmitted
@@ -290,6 +263,94 @@ private fun Form(
     }
 }
 
+@Composable
+private fun TextFieldUser(user: String, onUserChange: (String) -> Unit, isEmailValid: Boolean) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = user,
+        onValueChange = onUserChange,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = if (isEmailValid) Primary else ErrorColor,
+            unfocusedBorderColor = OnBackground,
+            cursorColor = Primary,
+            focusedLabelColor = OnBackground,
+            unfocusedLabelColor = Color.Gray,
+            focusedTextColor = OnBackground,
+            unfocusedTextColor = OnBackground
+        ),
+        shape = RoundedCornerShape(12.dp),
+        leadingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_user),
+                contentDescription = "User icon",
+                tint = Color.Gray
+            )
+        },
+        label = { Text("Usuario") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun TextFieldPassword(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    isPasswordValid: Boolean,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: () -> Unit,
+) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = password,
+        onValueChange = onPasswordChange,
+        label = { Text("Contraseña") },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = if (isPasswordValid) Primary else ErrorColor,
+            unfocusedBorderColor = OnBackground,
+            cursorColor = Primary,
+            focusedLabelColor = OnBackground,
+            unfocusedLabelColor = Color.Gray,
+            focusedTextColor = OnBackground,
+            unfocusedTextColor = OnBackground
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        shape = RoundedCornerShape(12.dp),
+        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        leadingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_lock),
+                contentDescription = "Password icon",
+                tint = Color.Gray
+            )
+        },
+        trailingIcon = {
+            IconButton(onClick = onPasswordVisibilityChange) {
+                Icon(
+                    painter = if (passwordVisible)
+                        painterResource(R.drawable.ic_visibility)
+                    else
+                        painterResource(R.drawable.ic_visibility_off),
+                    contentDescription = if (passwordVisible)
+                        "Ocultar contraseña"
+                    else
+                        "Mostrar contraseña",
+                    tint = Color.Gray
+                )
+            }
+        }
+    )
+}
+
+//Boton de inicio de sesion, recibe un booleano que indica si el formulario es valido o no,
+// y una funcion que se ejecuta al hacer click.
 @Composable
 private fun LoginButton(isValidForm: Boolean, onFormSubmitted: () -> Unit) {
     ElevatedButton(

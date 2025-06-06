@@ -1,12 +1,10 @@
 package com.jpdev.ptapplicationmap.presentation.screen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -27,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -38,21 +35,23 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.jpdev.ptapplicationmap.R
 import com.jpdev.ptapplicationmap.presentation.ui.theme.OnPrimary
 import com.jpdev.ptapplicationmap.presentation.ui.theme.Primary
-import com.jpdev.ptapplicationmap.R
 
 @Composable
 fun MapScreen(lat: Double, lng: Double, onClose: () -> Unit) {
+    //Creamos un estado para el tipo de mapa
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
-    //Definimos la latitud y longitud
+    //Recibimos la latitud y longitud y la inicializamos en un marcador
     val marker = LatLng(lat, lng)
     //Creamos un estado de camara para centrar el mapa en la latitud y longitud
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(marker, 15f)
     }
+    //Creamos un estado para el dialogo de cerrar
     var showExitDialog by remember { mutableStateOf(false) }
-
+    //Contenedor principal
     Scaffold { innerPadding ->
         Box(
             modifier = Modifier
@@ -60,20 +59,20 @@ fun MapScreen(lat: Double, lng: Double, onClose: () -> Unit) {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            //Mapa de google, le pasamos el marcador y la camara y el tipo de mapa
             MapFromGoogle(marker, cameraPositionState, mapType)
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(16.dp)
                     .align(Alignment.TopEnd)
                     .shadow(elevation = 8.dp, shape = CircleShape)
                     .background(color = Primary, shape = CircleShape)
             ) {
-                Row(
+                //Columna para botones de interacción
+                Column(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Icono para mapa normal
                     IconButton(onClick = { mapType = MapType.NORMAL }) {
@@ -117,6 +116,7 @@ fun MapScreen(lat: Double, lng: Double, onClose: () -> Unit) {
                     }
                 }
             }
+            //Dialogo de salida, se debe confirmar para salir.
             ConfirmExitDialog(
                 visible = showExitDialog,
                 onConfirmExit = onClose,
@@ -138,6 +138,7 @@ private fun MapFromGoogle(marker: LatLng, camera: CameraPositionState, mapType: 
             mapType = mapType
         )
     ) {
+        //Asignamos el marcador con las coordenadas
         Marker(
             state = rememberMarkerState(position = marker),
             title = "Bogotá",
@@ -153,7 +154,9 @@ private fun ConfirmExitDialog(
     onConfirmExit: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    //Si el dialogo no es visible, no lo mostramos
     if (!visible) return
+    //Si es visible, mostramos el dialogo y enviamos el callback desde el NavigationWrapper
     AlertDialog(
         onDismissRequest = {
             // Cuando el usuario toca fuera del diálogo o presiona “atrás”
